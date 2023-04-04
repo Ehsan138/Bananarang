@@ -25,8 +25,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 
-import javafx.scene.control.Label;
-
 
 public class GameViewController implements Initializable {
 
@@ -38,8 +36,6 @@ public class GameViewController implements Initializable {
     private Label chiliCounterLabel;
     @FXML
     private Button pauseResumeButton;
-    @FXML
-    private Button bigPlayButton;
     @FXML
     private Label gameOverLabel;
     @FXML
@@ -83,7 +79,7 @@ public class GameViewController implements Initializable {
         gameObjects.add(monkey);
         gamePaused = true;
 
-        // Add chocolates and chili peppers to gameObjects here
+        // Add chocolates and chili peppers to gameObjects
         for (int i = 0; i < 5; i++) {
             double x = Math.random() * (gameCanvas.getWidth() - 50);
             double y = Math.random() * (gameCanvas.getHeight() / 2);
@@ -94,11 +90,10 @@ public class GameViewController implements Initializable {
         for (int i = 0; i < 3; i++) {
             double x = Math.random() * (gameCanvas.getWidth() - 50);
             double y = Math.random() * (gameCanvas.getHeight() / 2);
-            double speed = 2 + Math.random() * 5; // Increase the initial speed here (e.g., from 1 to 2)
+            double speed = 2 + Math.random() * 5; // Increase the initial speed here
             gameObjects.add(new ChiliPepper(gc, x, y, 50, 50, speed));
         }
 
-//        gamePaused = false;
         score = 0;
         chiliCounter = 3;
         updateUI();
@@ -128,8 +123,6 @@ public class GameViewController implements Initializable {
         speedIncreaseTimeline.play();
 
         initBackgroundMusic();
-
-//        bigPlayButton.setVisible(true);
     }
 
     @FXML
@@ -149,8 +142,6 @@ public class GameViewController implements Initializable {
             gamePaused = false;
             instructionLabel.setVisible(false);
             gameCanvas.requestFocus();
-
-//            bigPlayButton.setVisible(false);
             gameOverLabel.setVisible(false);
             gameCanvas.requestFocus();
             gameLoop.start();
@@ -167,9 +158,6 @@ public class GameViewController implements Initializable {
             case D:
                 monkey.setMoveRight(true);
                 break;
-//            case SPACE:
-//                monkey.throwBanana();
-//                break;
         }
     }
 
@@ -281,14 +269,5 @@ public class GameViewController implements Initializable {
         mediaPlayer.seek(Duration.ZERO);
         mediaPlayer.play();
     }
-
-    public Canvas getGameCanvas() {
-        return gameCanvas;
-    }
-
-    public ImageView getBackgroundImageView() {
-        return backgroundImageView;
-    }
-
 }
 
