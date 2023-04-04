@@ -8,12 +8,24 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
+
+import java.io.File;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.util.Duration;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
+import javafx.scene.control.Label;
 
 
 public class GameViewController implements Initializable {
@@ -26,6 +38,12 @@ public class GameViewController implements Initializable {
     private Label chiliCounterLabel;
     @FXML
     private Button pauseResumeButton;
+    @FXML
+    private Button bigPlayButton;
+    @FXML
+    private Label gameOverLabel;
+    @FXML
+    private Label instructionLabel;
 
     private GraphicsContext gc;
     private ArrayList<GameObject> gameObjects;
@@ -35,9 +53,30 @@ public class GameViewController implements Initializable {
     private int chiliCounter;
     @FXML
     private Button playButton;
+    private AtomicInteger speedIncreaseCounter = new AtomicInteger(0);
+    private AnimationTimer gameLoop;
+    private Timeline speedIncreaseTimeline;
+    @FXML
+    private ImageView backgroundImageView;
+    private MediaPlayer mediaPlayer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        backgroundImageView.setImage(new Image("C:\\Users\\ehsan\\IdeaProjects\\Bananarang\\src\\main\\resources\\jungle.jpg"));
+
+        Font jungleLandFont = Font.loadFont(getClass().getResourceAsStream("/Jungle Land.ttf"), 18);
+        Font jungleLandFont48 = Font.loadFont(getClass().getResourceAsStream("/Jungle Land.ttf"), 48);
+
+        instructionLabel.setFont(jungleLandFont);
+        instructionLabel.setVisible(true);
+
+        scoreLabel.setFont(jungleLandFont);
+        chiliCounterLabel.setFont(jungleLandFont);
+        gameOverLabel.setFont(jungleLandFont48);
+        playButton.setFont(jungleLandFont);
+        pauseResumeButton.setFont(jungleLandFont);
+
         gc = gameCanvas.getGraphicsContext2D();
         gameObjects = new ArrayList<>();
         monkey = new Monkey(gc, gameCanvas.getWidth() / 2, gameCanvas.getHeight() - 100);
@@ -55,11 +94,11 @@ public class GameViewController implements Initializable {
         for (int i = 0; i < 3; i++) {
             double x = Math.random() * (gameCanvas.getWidth() - 50);
             double y = Math.random() * (gameCanvas.getHeight() / 2);
-            double speed = 1 + Math.random() * 2;
+            double speed = 2 + Math.random() * 5; // Increase the initial speed here (e.g., from 1 to 2)
             gameObjects.add(new ChiliPepper(gc, x, y, 50, 50, speed));
         }
 
-        gamePaused = false;
+//        gamePaused = false;
         score = 0;
         chiliCounter = 3;
         updateUI();
@@ -68,7 +107,7 @@ public class GameViewController implements Initializable {
         gameCanvas.setOnKeyPressed(this::handleKeyPressed);
         gameCanvas.setOnKeyReleased(this::handleKeyReleased);
 
-        AnimationTimer gameLoop = new AnimationTimer() {
+        gameLoop = new AnimationTimer() {
             @Override
             public void handle(long now) {
                 if (!gamePaused) {
@@ -77,23 +116,47 @@ public class GameViewController implements Initializable {
                 }
             }
         };
+
+        gameLoop.start();
+        speedIncreaseTimeline = new Timeline(new KeyFrame(Duration.seconds(2.5), event -> {
+            speedIncreaseCounter.incrementAndGet();
+            gameObjects.stream()
+                    .filter(obj -> obj instanceof Chocolate || obj instanceof ChiliPepper)
+                    .forEach(obj -> ((DynamicGameObject) obj).speed += (obj instanceof ChiliPepper ? 0.5 : 0.3));
+        }));
+        speedIncreaseTimeline.setCycleCount(Timeline.INDEFINITE);
+        speedIncreaseTimeline.play();
+
+        initBackgroundMusic();
+
+//        bigPlayButton.setVisible(true);
     }
 
     @FXML
     private void startGame() {
-        gamePaused = false;
-        gameCanvas.requestFocus();
-        AnimationTimer gameLoop = new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (!gamePaused) {
-                    updateGame();
-                    renderGame();
-                }
+        backgroundImageView.setVisible(false);
+        if (gamePaused) {
+            if (chiliCounter == 0) {
+                // Reset game state
+                score = 0;
+                chiliCounter = 3;
+                speedIncreaseCounter.set(0);
+                updateUI();
+                gameObjects.stream()
+                        .filter(obj -> obj instanceof Chocolate || obj instanceof ChiliPepper)
+                        .forEach(obj -> ((DynamicGameObject) obj).speed = (obj instanceof Chocolate) ? 1 + Math.random() * 2 : 2 + Math.random() * 5);
             }
-        };
-        gameLoop.start();
-        playButton.setDisable(true);
+            gamePaused = false;
+            instructionLabel.setVisible(false);
+            gameCanvas.requestFocus();
+
+//            bigPlayButton.setVisible(false);
+            gameOverLabel.setVisible(false);
+            gameCanvas.requestFocus();
+            gameLoop.start();
+            speedIncreaseTimeline.play();
+        }
+        mediaPlayer.play();
     }
 
     private void handleKeyPressed(KeyEvent event) {
@@ -104,9 +167,9 @@ public class GameViewController implements Initializable {
             case D:
                 monkey.setMoveRight(true);
                 break;
-            case SPACE:
-                monkey.throwBanana();
-                break;
+//            case SPACE:
+//                monkey.throwBanana();
+//                break;
         }
     }
 
@@ -129,27 +192,23 @@ public class GameViewController implements Initializable {
         }
         monkey.update();
 
-        if (monkey.getBanana() != null && monkey.getBanana().isVisible()) {
-            List<GameObject> collidedObjects = gameObjects.stream()
-                    .filter(obj -> obj.getBounds().intersects(monkey.getBanana().getBounds()))
-                    .collect(Collectors.toList());
+        List<GameObject> collidedObjects = gameObjects.stream()
+                .filter(obj -> obj.getBounds().intersects(monkey.getBounds()))
+                .collect(Collectors.toList());
 
-            for (GameObject obj : collidedObjects) {
-                if (obj                 instanceof Chocolate) {
-                    score++;
-                    resetObjectPosition(obj);
-                } else if (obj instanceof ChiliPepper) {
-                    chiliCounter--;
-                    if (chiliCounter == 0) {
-                        // Game over logic
-                        gamePaused = true;
-                        pauseResumeButton.setDisable(true);
-                    }
-                    resetObjectPosition(obj);
+        for (GameObject obj : collidedObjects) {
+            if (obj instanceof Chocolate) {
+                score++;
+                resetObjectPosition(obj);
+            } else if (obj instanceof ChiliPepper) {
+                chiliCounter--;
+                if (chiliCounter == 0) {
+                    // Game over logic
+                    gamePaused = true;
+                    showGameOver();
                 }
+                resetObjectPosition(obj);
             }
-
-            monkey.getBanana().setVisible(false);
         }
 
         updateUI();
@@ -169,6 +228,10 @@ public class GameViewController implements Initializable {
     private void resetObjectPosition(GameObject obj) {
         obj.setX(Math.random() * (gameCanvas.getWidth() - obj.getWidth()));
         obj.setY(-obj.getHeight());
+
+        if (obj instanceof DynamicGameObject) {
+            ((DynamicGameObject) obj).speed += speedIncreaseCounter.get() * 0.1;
+        }
     }
 
     private void updateUI() {
@@ -181,8 +244,50 @@ public class GameViewController implements Initializable {
         gamePaused = !gamePaused;
         pauseResumeButton.setText(gamePaused ? "Resume" : "Pause");
         if (!gamePaused) {
+            mediaPlayer.play();
             gameCanvas.requestFocus();
+        } else {
+            mediaPlayer.pause();
         }
+    }
+
+    private void showGameOver() {
+        gc.setFont(Font.font("Verdana", FontWeight.BOLD, 48));
+        gc.setFill(Color.RED);
+        gc.fillText("GAME OVER", gameCanvas.getWidth() / 2 - 120, gameCanvas.getHeight() / 2);
+        playButton.setDisable(false);
+        playButton.setText("Restart");
+
+        playButton.setText("Restart");
+        gameOverLabel.setVisible(true);
+        gameLoop.stop();
+        speedIncreaseTimeline.stop();
+
+        playButton.setOnAction(event -> {
+            restartMusic();
+            startGame();
+        });
+    }
+
+    private void initBackgroundMusic() {
+        String musicFile = "C:\\Users\\ehsan\\IdeaProjects\\Bananarang\\src\\main\\resources\\In-the-Past.mp3";
+        Media media = new Media(new File(musicFile).toURI().toString());
+        mediaPlayer = new MediaPlayer(media);
+        mediaPlayer.setCycleCount(MediaPlayer.INDEFINITE);
+    }
+
+    private void restartMusic() {
+        mediaPlayer.stop();
+        mediaPlayer.seek(Duration.ZERO);
+        mediaPlayer.play();
+    }
+
+    public Canvas getGameCanvas() {
+        return gameCanvas;
+    }
+
+    public ImageView getBackgroundImageView() {
+        return backgroundImageView;
     }
 
 }
