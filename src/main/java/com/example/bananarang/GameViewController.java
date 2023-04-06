@@ -133,7 +133,7 @@ public class GameViewController implements Initializable {
 
         // Start game loop and speed increase timeline
         gameLoop.start();
-        speedIncreaseTimeline = new Timeline(new KeyFrame(Duration.seconds(2.5), event -> {
+        speedIncreaseTimeline = new Timeline(new KeyFrame(Duration.seconds(3), event -> {
             speedIncreaseCounter.incrementAndGet();
             gameObjects.stream()
                     .filter(obj -> obj instanceof Chocolate || obj instanceof ChiliPepper)

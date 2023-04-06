@@ -13,7 +13,7 @@ public class Monkey extends GameObject {
 
     private boolean moveLeft;
     private boolean moveRight;
-    private final double moveSpeed = 20;
+    private final double moveSpeed = 18;
 
     /**
      * Constructs a new Monkey object with the specified GraphicsContext, initial position x, and y.
