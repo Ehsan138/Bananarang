@@ -31,7 +31,7 @@ public class Main extends Application {
     }
 
     /**
-     * The main method for launching the Bananarang application.
+     * The main method for launching the Bananarang game.
      *
      * @param args the command-line arguments
      */
