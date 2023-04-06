@@ -7,17 +7,16 @@
 
 ## Overview
 
-Bananarang is a fun and challenging 2D game where players control a monkey who throws banana boomerangs at moving chocolates to earn points. Inspired by elements of Super Mario Party, Boomerang Fu, and Fruit Ninja, the game features various types of chocolates, obstacles, and increasing levels of difficulty.
+In this game, you take control of a monkey aiming to collect as many chocolates as possible. Be careful not to touch the chili peppers, as they will cost you lives! Navigate the monkey using the A and D keys and start the game by pressing the Play button.
 
-## How to Play
+## How To Play
 
-- Move the monkey left and right to aim.
-- Throw the banana boomerang at moving chocolates to earn points.
-- Some chocolates are worth more points than regular ones.
-- Certain chocolates grant the ability to throw two bananas at once for a limited time.
-- Reach the target chocolate count for each level within the time limit to progress.
-- As levels increase, the speed of moving objects will also increase.
-- Players have 3 lives (bananas). Avoid hitting chili peppers, as they will cause a loss of one life.
+1. Press the Play button to start the game.
+2. Move the monkey left by pressing the A key.
+3. Move the monkey right by pressing the D key.
+4. Collect chocolates by touching them with the monkey.
+5. Avoid chili peppers, as they will cost you lives.
+6. Accumulate as many points as possible by collecting chocolates.
 
 ## Setup and Configuration
 
