@@ -1,6 +1,9 @@
 # Bananarang Game
 
-Created by *Your Name(s)*
+## Creators
+
+- Ehsan Emadi
+- Michelle Kwok
 
 ## Overview
 
