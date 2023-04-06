@@ -30,7 +30,7 @@ Replace all image and sound file paths with the absolute path. To do this, right
 
 For images, replace the path with the following format: `/nameOfTheFile`. For the mp3 file, follow the same steps as for Windows users.
 
-## Language and Important Classes
+## Language
 
 Bananarang is developed in Java, utilizing JavaFX for the graphical user interface. The game's code demonstrates the use of inheritance and various classes, such as:
 
