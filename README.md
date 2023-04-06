@@ -34,7 +34,53 @@ For images, replace the path with the following format: `/nameOfTheFile`. For th
 
 Bananarang is developed in Java, utilizing JavaFX for the graphical user interface. The game's code demonstrates the use of inheritance and various classes, such as:
 
-- GameObject: An abstract class representing game objects.
-- DynamicGameObject: An abstract class extending GameObject, representing dynamic game objects.
-- Chocolate and ChiliPepper: Classes extending DynamicGameObject for their respective objects.
+## Classes
+
+The following classes are included in the Bananarang game:
+
+### GameObject.java
+
+A base class for all game objects, including the monkey, chocolates, and chili peppers. It handles rendering game objects on the screen.
+
+### DynamicGameObject.java
+
+A subclass of GameObject, representing dynamic game objects (i.e., chocolates and chili peppers) that move across the screen.
+
+### Monkey.java
+
+A subclass of GameObject representing the monkey character. The monkey moves left and right using the 'A' and 'D' keys, respectively.
+
+### Chocolate.java
+
+A subclass of DynamicGameObject representing falling chocolates. The monkey scores points by catching them.
+
+### ChiliPepper.java
+
+A subclass of DynamicGameObject representing falling chili peppers. The monkey loses a life (chili counter) if it catches one.
+
+### Main.java
+
+The main class, responsible for launching the JavaFX application and setting up the primary stage.
+
+### GameViewController.java
+
+The controller class for the game view, responsible for handling game logic, user input, and UI updates.
+
+## Game Mechanics
+
+- The monkey moves left and right to catch falling chocolates and avoid chili peppers.
+- Catching a chocolate increases the score by one point.
+- Catching a chili pepper decreases the chili counter by one. When the chili counter reaches zero, the game is over.
+- The game can be paused and resumed using a button on the screen.
+- The speed of falling chocolates and chili peppers increases over time.
+
+## Assets
+
+- monkey.png: The monkey character's image.
+- chocolate.png: The chocolate image.
+- chili_pepper.png: The chili pepper image.
+- jungle.jpg: The background image for the game.
+- In-the-Past.mp3: Background music for the game.
+- Jungle Land.ttf: Custom font used for game labels and buttons.
+
 
